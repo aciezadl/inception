@@ -1,0 +1,62 @@
+services:
+  web-server:
+    container_name: wp
+    build:
+      context: requirements/wordpress/
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_HOST=mariadb-server
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress_user
+      - MYSQL_PASSWORD=userpassword
+    depends_on:
+      - mariadb-server
+    volumes:
+      - wordpress_data:/var/www/html
+    expose:
+      - 9000
+    networks:
+      - wordpress_net
+    restart: always
+
+  mariadb-server:
+    container_name: mariadb-server
+    build:
+      context: requirements/mariadb/
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress_user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - wordpress_net
+    restart: always
+  
+  nginx:
+    container_name: nginx
+    build:
+      context: requirements/nginx/  # Répertoire contenant le Dockerfile Nginx
+      dockerfile: Dockerfile  # Assurez-vous que votre Dockerfile pour Nginx est dans ./nginx
+    depends_on:
+      - web-server
+    ports:
+      - "8080:80"  # Exposer le port 80 pour accéder à WordPress via Nginx
+    volumes:
+      - wordpress_data:/var/www/html  # Volume partagé avec le service WordPress
+    networks:
+      - wordpress_net
+    restart: always
+
+volumes:
+  mariadb_data:
+  wordpress_data:
+
+networks:
+  wordpress_net:
+    name: wordpress_net
+    driver: bridge
