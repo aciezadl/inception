@@ -29,30 +29,6 @@ RUN mv wp-cli.phar /usr/local/bin/wp
 COPY conf/auto_config.sh /usr/local/bin/auto_config.sh
 RUN chmod +x /usr/local/bin/auto_config.sh
 
-# CMD ["/usr/local/bin/auto_config.sh"]
+ENTRYPOINT [ "/usr/local/bin/auto_config.sh" ]
 
-# # Copier le script d'entrée
-# COPY entrypoint.sh /entrypoint.sh
-# RUN chmod +x /entrypoint.sh
-
-# # Définir le script comme point d'entrée
-# ENTRYPOINT ["/entrypoint.sh"]
-
-# # Définir les permissions de WordPress
-# RUN chown -R www-data:www-data /var/www/html && \
-#     chmod -R 755 /var/www/html
-
-# RUN wp --info
-
-# RUN wp config create --path=/var/www/html \
-#     --allow-root \
-#     --dbname=$MYSQL_DATABASE \
-#     --dbuser=$MYSQL_USER \
-#     --dbpass=$MYSQL_PASSWORD \
-#     --dbhost=$MYSQL_HOST \
-#     --skip-check \
-#     --debug
-
-# RUN wp config list
-
-# CMD ["php-fpm8.2", "-F"]
+# CMD ["/usr/sbin/php-fpm7.3", "-F"]

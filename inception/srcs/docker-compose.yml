@@ -1,55 +1,53 @@
 services:
-  web-server:
-    container_name: wp
-    build:
-      context: requirements/wordpress/
-      dockerfile: Dockerfile
-    environment:
-      - MYSQL_HOST=mariadb-server
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=wordpress_user
-      - MYSQL_PASSWORD=userpassword
-    depends_on:
-      - mariadb-server
-    volumes:
-      - wordpress_data:/var/www/html
-    expose:
-      - 9000
-    networks:
-      - wordpress_net
-    restart: always
-
-  mariadb-server:
-    container_name: mariadb-server
+  mariadb:
+    container_name: mariadb
     build:
       context: requirements/mariadb/
       dockerfile: Dockerfile
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress_user
-      MYSQL_PASSWORD: userpassword
+    env_file: .env
     volumes:
       - mariadb_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     networks:
-      - wordpress_net
-    restart: always
-  
+      - inception
+    restart: unless-stopped
+
   nginx:
     container_name: nginx
+    volumes:
+      - wordpress_data:/var/www/wordpress  # Volume partagé avec le service WordPress
+    networks:
+      - inception
+    depends_on:
+      - web-server
     build:
       context: requirements/nginx/  # Répertoire contenant le Dockerfile Nginx
       dockerfile: Dockerfile  # Assurez-vous que votre Dockerfile pour Nginx est dans ./nginx
-    depends_on:
-      - web-server
+    env_file:
+      - .env
     ports:
       - "8080:80"  # Exposer le port 80 pour accéder à WordPress via Nginx
+      - "8443:443"
+    restart: on-failure
+
+  web-server:
+    container_name: wordpress
+    env_file:
+      - .env
     volumes:
-      - wordpress_data:/var/www/html  # Volume partagé avec le service WordPress
+      - wordpress_data:/var/www/wordpress
+    build:
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    depends_on:
+      - mariadb
+    expose:
+      - 9000
+    # ports:
+    #   - "8080:80"
     networks:
-      - wordpress_net
+      - inception
     restart: always
 
 volumes:
@@ -57,6 +55,6 @@ volumes:
   wordpress_data:
 
 networks:
-  wordpress_net:
-    name: wordpress_net
+  inception:
+    name: inception
     driver: bridge
