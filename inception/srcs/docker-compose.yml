@@ -28,7 +28,7 @@ services:
       - .env
     ports:
       - "8080:80"  # Exposer le port 80 pour accéder à WordPress via Nginx
-      - "8443:443"
+      - "443:443"
     restart: on-failure
 
   web-server:

@@ -29,6 +29,12 @@ fclean:
 	@rm -f $(OBJETS)
 	@echo "$(BLUE)Clean OK$(NC)"
 
+	# a configurer pour bien tout clean
+	# docker rmi -f $(docker images -aq)
+	# docker rm -f $(docker ps -aq)
+	# docker system prune -a
+
+
 re: fclean all
 
 .PHONY: all clean fclean re
