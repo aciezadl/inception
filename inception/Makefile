@@ -1,8 +1,4 @@
 NAME = inception
-SRC = 
-OBJETS = $(SRC:.cpp=.o)
-
-CC = 
 
 CLEANLINE=/33[2K
 
@@ -12,28 +8,19 @@ YELLOW=/033[0;33m
 RED=/033[0;31m
 NC=/033[0m
 
-all: $(NAME)
+all:
+	cd srcs/ && docker compose up -d --build
 
-$(NAME): $(OBJETS)
-	@$(CC) $(OBJETS) -o &(NAME)
-	@echo "$(GREEN)Compilation OK$(NC)"
-	# sudo docker build -t img_nginx .
-	# sudo docker run -p 8080:80 --name docker_nginx img_nginx
+down:
+	cd srcs/ && docker compose down
+	@echo "$(BLUE)Containers are down$(NC)"
 
 clean:
-	@rm -f $(OBJETS)
-	@echo "$(BLUE)Clean OK$(NC)"
-
-fclean:
-	@rm -f $(NAME)
-	@rm -f $(OBJETS)
-	@echo "$(BLUE)Clean OK$(NC)"
-
 	# a configurer pour bien tout clean
-	# docker rmi -f $(docker images -aq)
-	# docker rm -f $(docker ps -aq)
-	# docker system prune -a
-
+	cd srcs/ && docker rmi -f $(docker images -aq)
+	cd srcs/ && docker rm -f $(docker ps -aq)
+	cd srcs/ && docker system prune -a
+	@echo "$(BLUE)Clean OK$(NC)"
 
 re: fclean all
 

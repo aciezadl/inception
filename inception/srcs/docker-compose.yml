@@ -44,15 +44,23 @@ services:
       - mariadb
     expose:
       - 9000
-    # ports:
-    #   - "8080:80"
     networks:
       - inception
     restart: always
 
 volumes:
   mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/aciezadl/data/mariadb_data
   wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/aciezadl/data/wordpress_data
 
 networks:
   inception:
