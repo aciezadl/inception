@@ -20,18 +20,17 @@ services:
     networks:
       - inception
     depends_on:
-      - web-server
+      - wordpress
     build:
       context: requirements/nginx/  # Répertoire contenant le Dockerfile Nginx
       dockerfile: Dockerfile  # Assurez-vous que votre Dockerfile pour Nginx est dans ./nginx
     env_file:
       - .env
     ports:
-      - "8080:80"  # Exposer le port 80 pour accéder à WordPress via Nginx
       - "443:443"
     restart: on-failure
 
-  web-server:
+  wordpress:
     container_name: wordpress
     env_file:
       - .env
